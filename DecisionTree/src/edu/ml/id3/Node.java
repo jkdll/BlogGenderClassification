@@ -11,5 +11,7 @@ public class Node {
 	private Node parent;
 	private ArrayList<Node> children;
 	
-
+	public Node(String attribute,Node parent,ArrayList<Node> children){
+		
+	}
 }
