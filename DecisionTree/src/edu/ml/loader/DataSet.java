@@ -60,6 +60,7 @@ public class DataSet {
 							headers.get(i).setFeatureType(DataType.NOMINAL);
 						}
 					}
+					line_number++;
 				}
 			}
 			
@@ -103,8 +104,5 @@ public class DataSet {
 	    }
 	}
 	public void printData(){
-		for(int i = 0; i <= values.length - 1; i++){
-			System.out.print( values[i][0] + ",");
-		}
 	}
 }
