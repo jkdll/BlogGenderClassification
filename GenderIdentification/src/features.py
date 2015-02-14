@@ -1,6 +1,10 @@
 from textblob import TextBlob
+from turtledemo.chaos import line
+import re
 
 class FeatureVector:
+
+    
 
     def __init__(self, text):
         self.text = text
@@ -39,24 +43,54 @@ class FeatureVector:
         for word in listOfWords:
             if word in {"a", "an", "the"}:
                 i += 1
-        return i/len(listOfWords);
-         
-
+        return i/len(listOfWords)
+    
+    #return number of so-called "blog words" in text
+    def blogWords(self):
+        filename = 'blogwords.txt'
+        i = 0
+        textblob = TextBlob(self.text)
+        blogWords_file = open(filename, 'r')
+        #line represents a blog word
+        for line in blogWords_file:
+            #Remove new line escape sequence
+            line = re.sub(r'[^a-zA-z0-9\'\"-/]', ' ', line)
+            #array of words in line
+            lineArray = [x.lower() for x in line.split()]
+            #entry represents an n-gram instance of the input text
+            for entry in textblob.ngrams(n = len(lineArray)):
+                entry = [x.lower() for x in entry]
+                if lineArray == entry:
+                    i += 1
+        return i    
+    
+    #return number of 
+    def assent(self):
+        i = 0
+        filename = 'negation.txt'
+        listOfWords = self.text.split()
+        with open(filename) as f:
+            content = f.readlines()
+            content = [x.replace('\n','').lower() for x in content]
+        for word in listOfWords:
+            if word.lower() in content:
+                i += 1
+        return i;
+    
 text = '''
-urlLink urlLink urlLink urlLink The titular threat of The Blob has always struck me as the ultimate movie
-monster: an insatiably hungry, amoeba-like mass able to penetrate
-virtually any safeguard, capable of--as a doomed doctor chillingly
-describes it--"assimilating flesh on contact.
-Snide comparisons to gelatin be damned, it's a concept with the most
-devastating of potential consequences, not unlike the grey goo scenario
-proposed by technological theorists fearful of
-artificial intelligence run rampant.
-'''
-featureVec = FeatureVector(text)
 
-print("Weighted average values: \n")
-print("Prepositions: "+str(featureVec.prepositionAv()))
-print("Hyperlinks: "+str(featureVec.hyperlinksAv()))
-print("Pronouns: "+str(featureVec.pronounsAv()))
-print("Prepositions: "+str(featureVec.prepositionAv()))
-print("Articles: "+str(featureVec.articlesAv()))
+'''
+   
+blob = TextBlob(text);
+print(blob.ngrams(n=1));
+print(blob.ngrams(n=2));
+print(blob.ngrams(n=3));
+
+#featureVec = FeatureVector(text)
+
+#print("Weighted average values: \n")
+#print("Prepositions: "+str(featureVec.prepositionAv()))
+#print("Hyperlinks: "+str(featureVec.hyperlinksAv()))
+#print("Pronouns: "+str(featureVec.pronounsAv()))
+#print("Prepositions: "+str(featureVec.prepositionAv()))
+#print("Articles: "+str(featureVec.articlesAv()))
