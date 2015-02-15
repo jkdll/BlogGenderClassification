@@ -78,7 +78,9 @@ class Test(unittest.TestCase):
         text = "This pie Doesn't taste so good. I can't comprehend with the yuckiness of this mess. It's so disgusting and not good"
         noAssentWords = FeatureVector(text).assent()
         
-        self.assertEqual(3,noAssentWords)    
+        self.assertEqual(3,noAssentWords)
+
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

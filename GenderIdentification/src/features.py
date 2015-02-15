@@ -1,4 +1,5 @@
 from textblob import TextBlob
+from collections import defaultdict
 from turtledemo.chaos import line
 import re
 
@@ -76,15 +77,40 @@ class FeatureVector:
             if word.lower() in content:
                 i += 1
         return i;
-    
-text = '''
 
-'''
-   
-blob = TextBlob(text);
-print(blob.ngrams(n=1));
-print(blob.ngrams(n=2));
-print(blob.ngrams(n=3));
+    def sentiment(self):
+        sentiment = TextBlob(self.text).sentiment
+        #sentiment = {'polarity' : arr.polarity, 'subjectivity' : arr.subjectivity}
+        return sentiment
+
+    def polarity(self):
+        sentiment = TextBlob(self.text).sentiment
+        return sentiment.polarity;
+
+    def subjectivity(self):
+        sentiment = TextBlob(self.text).sentiment
+        return sentiment.subjectivity;
+
+    def fMeasure(self):
+        pos_array = TextBlob(self.text).pos_tags
+
+        # get pos tag frequencies
+        d = defaultdict(int)
+        for word, tag in pos_array:
+            d[tag] += 1
+
+        # calculate F-measure
+        f = 0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH']))
+
+        return f
+
+
+
+text = ""
+
+#print(blob.ngrams(n=1));
+#print(blob.ngrams(n=2));
+#print(blob.ngrams(n=3));
 
 #featureVec = FeatureVector(text)
 
@@ -94,3 +120,5 @@ print(blob.ngrams(n=3));
 #print("Pronouns: "+str(featureVec.pronounsAv()))
 #print("Prepositions: "+str(featureVec.prepositionAv()))
 #print("Articles: "+str(featureVec.articlesAv()))
+#print ("Sentiment: " +str(featureVec.sentiment()))
+#print("F-measure: " + str(featureVec.fMeasure()))
