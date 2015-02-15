@@ -81,7 +81,7 @@ class FeatureVector:
     def sentiment(self):
         sentiment = TextBlob(self.text).sentiment
         #sentiment = {'polarity' : arr.polarity, 'subjectivity' : arr.subjectivity}
-        return sentiment
+        return sentiment;
 
     def polarity(self):
         sentiment = TextBlob(self.text).sentiment
@@ -102,17 +102,28 @@ class FeatureVector:
         # calculate F-measure
         f = 0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH']))
 
-        return f
+        return f;
+
+    def emotiCount(self):
+
+        # detects :) :( :p :P :D :o :O :S :/ :@ :| :] :[ :} :{
+        #
+        # (or with '8', '=', ';' instead of ':' and also with added '-')
+        #
+        # WHAT ABOUT .img EMOTICONS?
+        regex = re.compile('[:|8|=|;]-*[\)\(\]\[}{pPDoOS//@/|]')
+        emoList = regex.findall(self.text)
+        return len(emoList);
 
 
 
-text = ""
+text = "Hello my friend :) :-) you're ok :---) :P :@ 8-| =] foooooo :[ bar subar ;-)?"
 
 #print(blob.ngrams(n=1));
 #print(blob.ngrams(n=2));
 #print(blob.ngrams(n=3));
 
-#featureVec = FeatureVector(text)
+featureVec = FeatureVector(text)
 
 #print("Weighted average values: \n")
 #print("Prepositions: "+str(featureVec.prepositionAv()))
@@ -122,3 +133,4 @@ text = ""
 #print("Articles: "+str(featureVec.articlesAv()))
 #print ("Sentiment: " +str(featureVec.sentiment()))
 #print("F-measure: " + str(featureVec.fMeasure()))
+print("Emoticons: " + str(featureVec.emotiCount()))
