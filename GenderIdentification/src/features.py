@@ -1,3 +1,4 @@
+import math
 from textblob import TextBlob
 from collections import defaultdict
 from turtledemo.chaos import line
@@ -100,9 +101,25 @@ class FeatureVector:
             d[tag] += 1
 
         # calculate F-measure
-        f = 0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH']))
+        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
 
         return f;
+
+    def normfMeasure(self):
+        pos_array = TextBlob(self.text).pos_tags
+
+        # get pos tag frequencies
+        d = defaultdict(int)
+        for word, tag in pos_array:
+            d[tag] += 1
+
+        # calculate F-measure
+        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
+        listOfWords = self.text.split()
+        measure = f/(len(listOfWords)/2)
+        #measure = math.pow(f/(len(listOfWords)/2), 2)
+
+        return measure;
 
     def emotiCount(self):
 
@@ -113,17 +130,37 @@ class FeatureVector:
         # WHAT ABOUT .img EMOTICONS?
         regex = re.compile('[:|8|=|;]-*[\)\(\]\[}{pPDoOS//@/|]')
         emoList = regex.findall(self.text)
-        return len(emoList);
+        listOfWords = self.text.split()
+        return len(emoList)/len(listOfWords);
 
 
 
-text = "Hello my friend :) :-) you're ok :---) :P :@ 8-| =] foooooo :[ bar subar ;-)?"
+text_male = "Today on IAG we’re pumped to announce that we’re an ambassador for this year’s GQ " \
+       "Man of The Year party in Hollywood, Dec 4th! We’ll be covering the event on social " \
+       "media and showing you guys all things dapper. I wanted to pair this hollywood-sign " \
+       "editorial I took on my last CA trip with the announcement because they both exude " \
+       "the same message- follow your dreams, reach for the top and be confident! As an " \
+       "influencer for menswear I’m honored GQ and Hugo Boss presented this opportunity " \
+       "to me because now I feel like a man of the year myself! It’s definitely inspired " \
+       "me to keep showcasing editorials about fashion, lifestyle and travel. Over the " \
+       "course of the next two weeks be on the look out for my Man of The Year coverage " \
+       "and my journey to the red carpet in Hollywood! so pumped!"
+
+text_fem = "SERIOUSLY, THOUGH, there's something about the sunniest of days (Errrr... " \
+           "February? Is that you?) that makes me want to bring out all my black vestigial " \
+           "items at one go. Well, black has always been my safety net, but it is particularly " \
+           "effective on bright days. Now, before you dismiss this post as just another ramble " \
+           "(which it is), I'd like to justify myself by attempting at a pathetic explanation: " \
+           "I think black stands out on nice days. On the other hand, I prefer wearing colour in " \
+           "dull, cloudy weather, because not only does that also stand out, but it lifts my mood " \
+           "a little. Think about it... I must be at least a little bit right... no?"
 
 #print(blob.ngrams(n=1));
 #print(blob.ngrams(n=2));
 #print(blob.ngrams(n=3));
 
-featureVec = FeatureVector(text)
+featureVec_m = FeatureVector(text_male)
+featureVec_f = FeatureVector(text_fem)
 
 #print("Weighted average values: \n")
 #print("Prepositions: "+str(featureVec.prepositionAv()))
@@ -132,5 +169,10 @@ featureVec = FeatureVector(text)
 #print("Prepositions: "+str(featureVec.prepositionAv()))
 #print("Articles: "+str(featureVec.articlesAv()))
 #print ("Sentiment: " +str(featureVec.sentiment()))
-#print("F-measure: " + str(featureVec.fMeasure()))
-print("Emoticons: " + str(featureVec.emotiCount()))
+print("Male F-measure: " + str(featureVec_m.fMeasure()))
+print("Male Normalised F-measure: " + str(featureVec_m.normfMeasure()))
+print("Male Emoticons: " + str(featureVec_m.emotiCount()))
+
+print("Female F-measure: " + str(featureVec_f.fMeasure()))
+print("Female Normalised F-measure: " + str(featureVec_f.normfMeasure()))
+print("Female Emoticons: " + str(featureVec_f.emotiCount()))
