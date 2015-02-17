@@ -6,78 +6,111 @@ import re
 
 class FeatureVector:
 
-    
 
     def __init__(self, text):
+        regex = "[^a-zA-Z0-9-/']"
+        #The blog post itself
         self.text = text
+        #POS tagging on text sequence
+        self.tags = TextBlob(text).tags
+        #filter out unnecessary characters and return list of whole words
+        self.listOfWords = [re.sub(regex, '', x) for x in text.split() if re.sub(regex, '', x)]     
         
-    #Weighted average of the prepositions in the text
-    def prepositionAv(self):
+    #Frequency of the prepositions in the text
+    def prepositions(self):
         i = 0
-        tagList = TextBlob(self.text).tags
-        for tag in tagList:
+        for tag in self.tags:
             if tag[1] == 'IN':
                 i += 1 
-        return i/len(tagList)
+        return i
+    
+    #Weighted average of the prepositions in the text
+    def prepositionAv(self):
+        return self.prepositions()/len(self.listOfWords)
+    
+    #Frequency of the pronouns in the text
+    def pronouns(self):
+        i = 0
+        for tag in self.tags:
+            if tag[1] == 'PRP':
+                i += 1 
+        return i
     
     #Weighted average of the pronouns in the text
     def pronounsAv(self):
-        i = 0
-        tagList = TextBlob(self.text).tags
-        for tag in tagList:
-            if tag[1] == 'PRP':
-                i += 1 
-        return i/len(tagList) 
+        return self.pronouns()/len(self.listOfWords)
     
-    #Weighted average of the hyperlinks in the text
-    def hyperlinksAv(self):
+    #Frequency of articles in the text
+    def articles(self):
         i = 0
-        listOfWords = self.text.split()
-        for word in listOfWords:
-            if word == 'urlLink':
+        regex = "[^a-zA-Z0-9]"
+        for word in self.listOfWords:
+            word = re.sub(regex, '', word)
+            if word.lower() in {"a", "an", "the"}:
                 i += 1
-        return i/len(listOfWords)
+        return i
     
     #Weighted average of the articles in the text
     def articlesAv(self):
-        i = 0
-        listOfWords = self.text.split()
-        for word in listOfWords:
-            if word in {"a", "an", "the"}:
-                i += 1
-        return i/len(listOfWords)
+        return self.articles()/len(self.listOfWords)
     
-    #return number of so-called "blog words" in text
+    #Frequency of the hyperlinks in the text
+    def hyperlinks(self):
+        i = 0
+        regex = "[^a-zA-Z0-9]"
+        for word in self.listOfWords:
+            word = re.sub(regex, '', word)
+            if word == 'urlLink':
+                i += 1
+        return i
+    
+    #Weighted average of the hyperlinks in the text
+    def hyperlinksAv(self):
+        return self.hyperlinks()/len(self.listOfWords)
+    
+    #Frequency of so-called "blog words" in text
     def blogWords(self):
+        regex1 = '[^a-zA-Z0-9-/]'
+        regex2 = '[^a-zA-Z0-9-\'\"/]'
         filename = 'blogwords.txt'
         i = 0
-        textblob = TextBlob(self.text)
+        textblob = TextBlob(" ".join(self.listOfWords))
+        #load blog words text file
         blogWords_file = open(filename, 'r')
         #line represents a blog word
         for line in blogWords_file:
-            #Remove new line escape sequence
-            line = re.sub(r'[^a-zA-z0-9\'\"-/]', ' ', line)
+            #Remove non-alphanumeric characters in sequence
+            line = re.sub(regex2, ' ', line)
             #array of words in line
             lineArray = [x.lower() for x in line.split()]
             #entry represents an n-gram instance of the input text
             for entry in textblob.ngrams(n = len(lineArray)):
-                entry = [x.lower() for x in entry]
+                entry = [re.sub(regex1, '', x).lower() for x in entry]
                 if lineArray == entry:
                     i += 1
         return i    
     
-    #return number of 
+    #Weighted average of "blog words" in text
+    def blogWordsAv(self):
+        return self.blogWords()/len(self.listOfWords)
+    
+    #Frequency of negation words in text
     def assent(self):
         i = 0
+        regex = '[^a-zA-Z0-9]'
         filename = 'negation.txt'
-        listOfWords = self.text.split()
         with open(filename) as f:
             content = f.readlines()
-            content = [x.replace('\n','').lower() for x in content]
-        for word in listOfWords:
+            content = [re.sub(regex, '', x).lower() for x in content]
+        for word in self.listOfWords:
+            word = re.sub(regex, '', word)
             if word.lower() in content:
                 i += 1
         return i;
+    
+    #Weighted average of negation words in text
+    def assentAv(self):
+        return self.assent()/len(self.listOfWords)
 
     def sentiment(self):
         sentiment = TextBlob(self.text).sentiment
@@ -115,8 +148,7 @@ class FeatureVector:
 
         # calculate F-measure
         f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
-        listOfWords = self.text.split()
-        measure = f/(len(listOfWords)/2)
+        measure = f/(len(self.listOfWords)/2)
         #measure = math.pow(f/(len(listOfWords)/2), 2)
 
         return measure;
@@ -130,8 +162,7 @@ class FeatureVector:
         # WHAT ABOUT .img EMOTICONS?
         regex = re.compile('[:|8|=|;]-*[\)\(\]\[}{pPDoOS//@/|]')
         emoList = regex.findall(self.text)
-        listOfWords = self.text.split()
-        return len(emoList)/len(listOfWords);
+        return len(emoList)/len(self.listOfWords);
 
 
 
@@ -169,10 +200,21 @@ featureVec_f = FeatureVector(text_fem)
 #print("Prepositions: "+str(featureVec.prepositionAv()))
 #print("Articles: "+str(featureVec.articlesAv()))
 #print ("Sentiment: " +str(featureVec.sentiment()))
+
 print("Male F-measure: " + str(featureVec_m.fMeasure()))
 print("Male Normalised F-measure: " + str(featureVec_m.normfMeasure()))
 print("Male Emoticons: " + str(featureVec_m.emotiCount()))
-
+print("Male Prepositions: " + str(featureVec_m.prepositionAv()))
+print("Male Pronouns: " + str(featureVec_m.pronounsAv()))
+print("Male Articles: " + str(featureVec_m.articlesAv()))
+print("Male Hyperlinks: " + str(featureVec_m.hyperlinksAv()))
+print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
+print("\n")
 print("Female F-measure: " + str(featureVec_f.fMeasure()))
 print("Female Normalised F-measure: " + str(featureVec_f.normfMeasure()))
 print("Female Emoticons: " + str(featureVec_f.emotiCount()))
+print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
+print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
+print("Female Articles: " + str(featureVec_f.articlesAv()))
+print("Female Hyperlinks: " + str(featureVec_f.hyperlinksAv()))
+print("Female Blog words: " + str(featureVec_f.blogWordsAv()))
