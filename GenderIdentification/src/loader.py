@@ -1,5 +1,6 @@
 import re
 import os
+import csv
 import xml.etree.ElementTree as ET
 import codecs
 from os import path
@@ -15,6 +16,20 @@ filenames = next(os.walk(blogsDir))[2]
 counter = 0
 mpa = dict.fromkeys(range(32))
 dataset = [];
+with open('C://Users//Jake//Desktop//genID//data.csv', 'a') as csvfile:
+        fieldnames = ['PrepositionFrequency'
+                      ,'PronounFrequency'
+                      ,'ArticleFrequency'
+                      ,'HyperlinkFrequency'
+                      ,'BlogwordFrequency'
+                      ,'AssentWordFrequency'
+                      ,'Polarity'
+                      ,'Subjectivity'
+                      ,'fmeasure'
+                      ,'emoticons'
+                      ,'gender']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
 
 for f in filenames:
     namevals = f.split('.');
@@ -29,9 +44,7 @@ for f in filenames:
     postcount = 0;
     for post in xmlTree.findall('post'):
         feature = FeatureVector(post.text);
-        dataset.append([authorID                    #1
-                        , postcount                    #2
-                        ,feature.prepositionAv()    #3
+        dataset.append([feature.prepositionAv()    #3
                         ,feature.pronounsAv()        #4
                         ,feature.articlesAv()        #5
                         ,feature.hyperlinksAv()        #6        
@@ -44,16 +57,22 @@ for f in filenames:
                         ,authorSex]);                #13
         postcount = postcount + 1;
     #print (authorID + " , " + authorSex + ">>> ");
-    counter = counter + 1;
-    print("ID,Post Count,Prepositions,Pronouns,Articles,Hyperlinks,BlogWords,Assent,Polarity,Subjectivity,fMeasure,EmotiCons,Gender");
-    for d in dataset:
-        print(str(d[0]) + "," + str(d[1]) 
-                + "," + str(d[2]) + "," + str(d[3]) 
-                + "," + str(d[4]) + "," + str(d[5]) + "," 
-                + str(d[6]) + "," + str(d[7]) + "," 
-                + str(d[8]) + "," + str(d[9]) + "," 
-                + str(d[10]) + "," + str(d[11]) + "," + str(d[12]));
-        print("\n");
+    counter = counter + 1; 
+    # print("ID,Post Count,Prepositions,Pronouns,Articles,Hyperlinks,BlogWords,Assent,Polarity,Subjectivity,fMeasure,EmotiCons,Gender");
+for d in dataset:
+        with open('C://Users//Jake//Desktop//genID//data.csv', 'a') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow({'PrepositionFrequency' : str(d[2])
+                             ,'PronounFrequency' : str(d[3])
+                             ,'ArticleFrequency' : str(d[4])
+                             ,'HyperlinkFrequency' : str(d[5])
+                             ,'BlogwordFrequency' : str(d[6])
+                             ,'AssentWordFrequency' : str(d[7])
+                             ,'Polarity' : str(d[8])
+                             ,'Subjectivity' : str(d[9])
+                             ,'fmeasure' : str(d[10])
+                             ,'emoticons' : str(d[11])
+                             ,'gender' : str(d[12])})
         
 print("Read: " + str(counter) + " Files and " + str(postcount) + " Posts");
 # var = raw_input("Waiting...");

@@ -1,4 +1,6 @@
 import math
+import time
+import datetime
 from textblob import TextBlob
 from collections import defaultdict
 from turtledemo.chaos import line
@@ -8,13 +10,15 @@ class FeatureVector:
 
 
     def __init__(self, text):
+        print ("Starting Feature Init:" + str(time.time()))
         regex = "[^a-zA-Z0-9-/']"
         #The blog post itself
         self.text = text
         #POS tagging on text sequence
         self.tags = TextBlob(text).tags
         #filter out unnecessary characters and return list of whole words
-        self.listOfWords = [re.sub(regex, '', x) for x in text.split() if re.sub(regex, '', x)]     
+        self.listOfWords = [re.sub(regex, '', x) for x in text.split() if re.sub(regex, '', x)]
+        print ("Ended Feature Init: " + str(time.time()))    
         
     #Frequency of the prepositions in the text
     def prepositions(self):
@@ -26,9 +30,12 @@ class FeatureVector:
     
     #Weighted average of the prepositions in the text
     def prepositionAv(self):
+        print ("Started PrepositionAV : " + str(time.time())) 
         if len(self.listOfWords) == 0:
+            # print ("Ended PrepositionAV : " + str(time.time())) 
             return 0
         else:
+            # print ("Ended PrepositionAV : " + str(time.time()))
             return round(self.prepositions()/len(self.listOfWords),4)
     
     #Frequency of the pronouns in the text
@@ -42,8 +49,10 @@ class FeatureVector:
     #Weighted average of the pronouns in the text
     def pronounsAv(self):
         if len(self.listOfWords) == 0:
+            # print ("Started PronounsAV : " + str(time.time()))
             return 0
         else:
+            # print ("Ended PronounsAV : " + str(time.time()))
             return round(self.pronouns()/len(self.listOfWords),4)
     
     #Frequency of articles in the text
@@ -59,8 +68,10 @@ class FeatureVector:
     #Weighted average of the articles in the text
     def articlesAv(self):
         if len(self.listOfWords) == 0:
+            # print ("Started ArticlesAV : " + str(time.time()))
             return 0
         else:
+            # print ("Ended ArticlesAV : " + str(time.time()))
             return round(self.articles()/len(self.listOfWords),4)
     
     #Frequency of the hyperlinks in the text
@@ -76,8 +87,11 @@ class FeatureVector:
     #Weighted average of the hyperlinks in the text
     def hyperlinksAv(self):
         if len(self.listOfWords) == 0:
+            # print ("Started HyperLinksAV : " + str(time.time()))
             return 0
-        return round(self.hyperlinks()/len(self.listOfWords),4)
+        else:
+            # print ("Ended HyperLinksAV : " + str(time.time()))
+            return round(self.hyperlinks()/len(self.listOfWords),4)
     
     #Frequency of so-called "blog words" in text
     def blogWords(self):
@@ -103,8 +117,11 @@ class FeatureVector:
     
     #Weighted average of "blog words" in text
     def blogWordsAv(self):
+        print ("Started blogWordsAv : " + str(time.time()))
         if len(self.listOfWords) == 0 :
+            # print ("Ended blogWordsAv : " + str(time.time()))
             return 0
+        print ("Ended blogWordsAv : " + str(time.time()))
         return round(self.blogWords()/len(self.listOfWords),4)
     
     #Frequency of negation words in text
@@ -123,24 +140,34 @@ class FeatureVector:
     
     #Weighted average of negation words in text
     def assentAv(self):
+        print ("Started assentAv : " + str(time.time()))
         if len(self.listOfWords) == 0:
+            # print ("Ended assentAv : " + str(time.time()))
             return 0
+        print ("Ended assentAv : " + str(time.time()))
         return round(self.assent()/len(self.listOfWords),4)
 
     def sentiment(self):
+        print ("Started sentiment : " + str(time.time()))
         sentiment = TextBlob(self.text).sentiment
         #sentiment = {'polarity' : arr.polarity, 'subjectivity' : arr.subjectivity}
+        print ("Ended sentiment : " + str(time.time()))
         return sentiment;
 
     def polarity(self):
+        print ("Started polarity : " + str(time.time()))
         sentiment = TextBlob(self.text).sentiment
+        print ("Ended polarity : " + str(time.time()))
         return round(sentiment.polarity,4);
 
     def subjectivity(self):
+        print ("Started subjectivity : " + str(time.time()))
         sentiment = TextBlob(self.text).sentiment
+        print ("Ended subjectivity : " + str(time.time()))
         return round(sentiment.subjectivity,4);
 
     def fMeasure(self):
+        print ("Started fMeasure : " + str(time.time()))
         pos_array = self.tags
 
         # get pos tag frequencies
@@ -150,10 +177,12 @@ class FeatureVector:
 
         # calculate F-measure
         f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH']) + 100))/100
+        print ("Ended fMeasure : " + str(time.time()))
 
         return round(f,4);
 
     def emotiCount(self):
+        print ("Started emotiCount : " + str(time.time()))
         text = self.text;
         text = (text.replace("&lt;", "<"));
         text = (text.replace("&gt;", ">"));
@@ -168,9 +197,11 @@ class FeatureVector:
         filter = re.compile("[^:8=;\-\)\(\]\[}{<>3//@/|a-zA-Z0-9-/']")
         retext = [re.sub(filter, '', t) for t in text.split() if re.sub(filter, '', t)]
         if len(retext) == 0:
+            # print ("Ended emotiCount : " + str(time.time()))
             return 0
         else:
-            return len(emoList)/len(retext);
+            # print ("Ended emotiCount : " + str(time.time()))
+            return round((len(emoList)/len(retext)),4);
 
 text_male = "Today on IAG we're pumped to announce that we're an ambassador for this year's GQ " \
        "Man of The Year party in Hollywood, Dec 4th! We'll be covering the event on social " \
@@ -196,8 +227,8 @@ text_fem = "SERIOUSLY, THOUGH, there's something about the sunniest of days (Err
 #print(blob.ngrams(n=2));
 #print(blob.ngrams(n=3));
 
-featureVec_m = FeatureVector(text_male)
-featureVec_f = FeatureVector(text_fem)
+#featureVec_m = FeatureVector(text_male)
+#featureVec_f = FeatureVector(text_fem)
 
 #print("Weighted average values: \n")
 #print("Prepositions: "+str(featureVec.prepositionAv()))
@@ -207,7 +238,7 @@ featureVec_f = FeatureVector(text_fem)
 #print("Articles: "+str(featureVec.articlesAv()))
 #print ("Sentiment: " +str(featureVec.sentiment()))
 
-print("Male F-measure: " + str(featureVec_m.fMeasure()))
+#print("Male F-measure: " + str(featureVec_m.fMeasure()))
 #print("Male Emoticons: " + str(featureVec_m.emotiCount()))
 #print("Male Prepositions: " + str(featureVec_m.prepositionAv()))
 #print("Male Pronouns: " + str(featureVec_m.pronounsAv()))
@@ -216,7 +247,7 @@ print("Male F-measure: " + str(featureVec_m.fMeasure()))
 #print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
 ##print("Male Sentiment: " + str(featureVec_m.sentiment()))
 #print("\n")
-print("Female F-measure: " + str(featureVec_f.fMeasure()))
+#print("Female F-measure: " + str(featureVec_f.fMeasure()))
 #print("Female Emoticons: " + str(featureVec_f.emotiCount()))
 #print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
 #print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
