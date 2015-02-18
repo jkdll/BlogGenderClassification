@@ -43,7 +43,8 @@ class FeatureVector:
     def pronounsAv(self):
         if len(self.listOfWords) == 0:
             return 0
-        return round(self.pronouns()/len(self.listOfWords),4)
+        else:
+            return round(self.pronouns()/len(self.listOfWords),4)
     
     #Frequency of articles in the text
     def articles(self):
@@ -59,7 +60,8 @@ class FeatureVector:
     def articlesAv(self):
         if len(self.listOfWords) == 0:
             return 0
-        return round(self.articles()/len(self.listOfWords),4)
+        else:
+            return round(self.articles()/len(self.listOfWords),4)
     
     #Frequency of the hyperlinks in the text
     def hyperlinks(self):
@@ -132,11 +134,11 @@ class FeatureVector:
 
     def polarity(self):
         sentiment = TextBlob(self.text).sentiment
-        return sentiment.polarity;
+        return round(sentiment.polarity,4);
 
     def subjectivity(self):
         sentiment = TextBlob(self.text).sentiment
-        return sentiment.subjectivity;
+        return round(sentiment.subjectivity,4);
 
     def fMeasure(self):
         pos_array = TextBlob(self.text).pos_tags
