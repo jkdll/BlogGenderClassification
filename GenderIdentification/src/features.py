@@ -26,7 +26,9 @@ class FeatureVector:
     
     #Weighted average of the prepositions in the text
     def prepositionAv(self):
-        return self.prepositions()/len(self.listOfWords)
+        if self.listOfWords == 0:
+            return 0
+        return round(self.prepositions()/len(self.listOfWords),4)
     
     #Frequency of the pronouns in the text
     def pronouns(self):
@@ -38,7 +40,9 @@ class FeatureVector:
     
     #Weighted average of the pronouns in the text
     def pronounsAv(self):
-        return self.pronouns()/len(self.listOfWords)
+        if self.listOfWords == 0:
+            return 0
+        return round(self.pronouns()/len(self.listOfWords),4)
     
     #Frequency of articles in the text
     def articles(self):
@@ -52,7 +56,9 @@ class FeatureVector:
     
     #Weighted average of the articles in the text
     def articlesAv(self):
-        return self.articles()/len(self.listOfWords)
+        if self.listOfWords == 0:
+            return 0
+        return round(self.articles()/len(self.listOfWords),4)
     
     #Frequency of the hyperlinks in the text
     def hyperlinks(self):
@@ -66,7 +72,9 @@ class FeatureVector:
     
     #Weighted average of the hyperlinks in the text
     def hyperlinksAv(self):
-        return self.hyperlinks()/len(self.listOfWords)
+        if self.listOfWords == 0:
+            return 0
+        return round(self.hyperlinks()/len(self.listOfWords),4)
     
     #Frequency of so-called "blog words" in text
     def blogWords(self):
@@ -92,7 +100,9 @@ class FeatureVector:
     
     #Weighted average of "blog words" in text
     def blogWordsAv(self):
-        return self.blogWords()/len(self.listOfWords)
+        if self.listOfWords == 0 :
+            return 0
+        return round(self.blogWords()/len(self.listOfWords),4)
     
     #Frequency of negation words in text
     def assent(self):
@@ -110,7 +120,7 @@ class FeatureVector:
     
     #Weighted average of negation words in text
     def assentAv(self):
-        return self.assent()/len(self.listOfWords)
+        return round(self.assent()/len(self.listOfWords),4)
 
     def sentiment(self):
         sentiment = TextBlob(self.text).sentiment
@@ -134,29 +144,14 @@ class FeatureVector:
             d[tag] += 1
 
         # calculate F-measure
-        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
+        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH']) + 100))/100
 
-        return f;
-
-    def normfMeasure(self):
-        pos_array = TextBlob(self.text).pos_tags
-
-        # get pos tag frequencies
-        d = defaultdict(int)
-        for word, tag in pos_array:
-            d[tag] += 1
-
-        # calculate F-measure
-        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
-        
-        if len(self.listOfWords) == 0:
-            return 0
-        measure = f/(len(self.listOfWords)/2)
-        #measure = math.pow(f/(len(listOfWords)/2), 2)
-
-        return round(measure,4);
+        return round(f,4);
 
     def emotiCount(self):
+        text = self.text;
+        text = (text.replace("&lt;", "<"));
+        text = (text.replace("&gt;", ">"));
 
         # detects :) :( :p :P :D :o :O :S :/ :@ :| :] :[ :} :{
         #
@@ -170,13 +165,13 @@ class FeatureVector:
 
         return len(emoList)/len(retext);
 
-text_male = "Today on IAG we’re pumped to announce that we’re an ambassador for this year’s GQ " \
-       "Man of The Year party in Hollywood, Dec 4th! We’ll be covering the event on social " \
+text_male = "Today on IAG we're pumped to announce that we're an ambassador for this year's GQ " \
+       "Man of The Year party in Hollywood, Dec 4th! We'll be covering the event on social " \
        "media and showing you guys all things dapper. I wanted to pair this hollywood-sign " \
        "editorial I took on my last CA trip with the announcement because they both exude " \
        "the same message- follow your dreams, reach for the top and be confident! As an " \
-       "influencer for menswear I’m honored GQ and Hugo Boss presented this opportunity " \
-       "to me because now I feel like a man of the year myself! It’s definitely inspired " \
+       "influencer for menswear I'm honored GQ and Hugo Boss presented this opportunity " \
+       "to me because now I feel like a man of the year myself! It's definitely inspired " \
        "me to keep showcasing editorials about fashion, lifestyle and travel. Over the " \
        "course of the next two weeks be on the look out for my Man of The Year coverage " \
        "and my journey to the red carpet in Hollywood! so pumped!"
@@ -215,7 +210,6 @@ print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
 print("Male Sentiment: " + str(featureVec_m.sentiment()))
 print("\n")
 print("Female F-measure: " + str(featureVec_f.fMeasure()))
-print("Female Normalised F-measure: " + str(featureVec_f.normfMeasure()))
 print("Female Emoticons: " + str(featureVec_f.emotiCount()))
 print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
 print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
