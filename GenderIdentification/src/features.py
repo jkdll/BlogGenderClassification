@@ -134,37 +134,26 @@ class FeatureVector:
             d[tag] += 1
 
         # calculate F-measure
-        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
+        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH']) + 100))/100
 
         return f;
 
-    def normfMeasure(self):
-        pos_array = TextBlob(self.text).pos_tags
-
-        # get pos tag frequencies
-        d = defaultdict(int)
-        for word, tag in pos_array:
-            d[tag] += 1
-
-        # calculate F-measure
-        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
-        measure = f/(len(self.listOfWords)/2)
-        #measure = math.pow(f/(len(listOfWords)/2), 2)
-
-        return measure;
-
     def emotiCount(self):
+        text = self.text;
+        text = (text.replace("&lt;", "<"));
+        text = (text.replace("&gt;", ">"));
 
         # detects :) :( :p :P :D :o :O :S :/ :@ :| :] :[ :} :{
         #
         # (or with '8', '=', ';' instead of ':' and also with added '-')
         #
-        # WHAT ABOUT .img EMOTICONS?
-        regex = re.compile('[:|8|=|;]-*[\)\(\]\[}{pPDoOS//@/|]')
-        emoList = regex.findall(self.text)
-        return len(emoList)/len(self.listOfWords);
+        regex = re.compile('[:|8|=|;]\'*-*[\)\(\]\[}{p<>3PDoOS//@/|]')
+        emoList = regex.findall(text)
 
+        filter = re.compile("[^:8=;\-\)\(\]\[}{<>3//@/|a-zA-Z0-9-/']")
+        retext = [re.sub(filter, '', t) for t in text.split() if re.sub(filter, '', t)]
 
+        return len(emoList)/len(retext);
 
 text_male = "Today on IAG we’re pumped to announce that we’re an ambassador for this year’s GQ " \
        "Man of The Year party in Hollywood, Dec 4th! We’ll be covering the event on social " \
@@ -202,19 +191,19 @@ featureVec_f = FeatureVector(text_fem)
 #print ("Sentiment: " +str(featureVec.sentiment()))
 
 print("Male F-measure: " + str(featureVec_m.fMeasure()))
-print("Male Normalised F-measure: " + str(featureVec_m.normfMeasure()))
 print("Male Emoticons: " + str(featureVec_m.emotiCount()))
 print("Male Prepositions: " + str(featureVec_m.prepositionAv()))
 print("Male Pronouns: " + str(featureVec_m.pronounsAv()))
 print("Male Articles: " + str(featureVec_m.articlesAv()))
 print("Male Hyperlinks: " + str(featureVec_m.hyperlinksAv()))
 print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
+print("Male Sentiment: " + str(featureVec_m.sentiment()))
 print("\n")
 print("Female F-measure: " + str(featureVec_f.fMeasure()))
-print("Female Normalised F-measure: " + str(featureVec_f.normfMeasure()))
 print("Female Emoticons: " + str(featureVec_f.emotiCount()))
 print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
 print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
 print("Female Articles: " + str(featureVec_f.articlesAv()))
 print("Female Hyperlinks: " + str(featureVec_f.hyperlinksAv()))
 print("Female Blog words: " + str(featureVec_f.blogWordsAv()))
+print("Female Sentiment: " + str(featureVec_f.sentiment()))
