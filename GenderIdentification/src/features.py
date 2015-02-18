@@ -26,9 +26,10 @@ class FeatureVector:
     
     #Weighted average of the prepositions in the text
     def prepositionAv(self):
-        if self.listOfWords == 0:
+        if len(self.listOfWords) == 0:
             return 0
-        return round(self.prepositions()/len(self.listOfWords),4)
+        else:
+            return round(self.prepositions()/len(self.listOfWords),4)
     
     #Frequency of the pronouns in the text
     def pronouns(self):
@@ -40,7 +41,7 @@ class FeatureVector:
     
     #Weighted average of the pronouns in the text
     def pronounsAv(self):
-        if self.listOfWords == 0:
+        if len(self.listOfWords) == 0:
             return 0
         return round(self.pronouns()/len(self.listOfWords),4)
     
@@ -56,7 +57,7 @@ class FeatureVector:
     
     #Weighted average of the articles in the text
     def articlesAv(self):
-        if self.listOfWords == 0:
+        if len(self.listOfWords) == 0:
             return 0
         return round(self.articles()/len(self.listOfWords),4)
     
@@ -72,7 +73,7 @@ class FeatureVector:
     
     #Weighted average of the hyperlinks in the text
     def hyperlinksAv(self):
-        if self.listOfWords == 0:
+        if len(self.listOfWords) == 0:
             return 0
         return round(self.hyperlinks()/len(self.listOfWords),4)
     
@@ -100,7 +101,7 @@ class FeatureVector:
     
     #Weighted average of "blog words" in text
     def blogWordsAv(self):
-        if self.listOfWords == 0 :
+        if len(self.listOfWords) == 0 :
             return 0
         return round(self.blogWords()/len(self.listOfWords),4)
     
@@ -120,6 +121,8 @@ class FeatureVector:
     
     #Weighted average of negation words in text
     def assentAv(self):
+        if len(self.listOfWords) == 0:
+            return 0
         return round(self.assent()/len(self.listOfWords),4)
 
     def sentiment(self):
@@ -162,8 +165,10 @@ class FeatureVector:
 
         filter = re.compile("[^:8=;\-\)\(\]\[}{<>3//@/|a-zA-Z0-9-/']")
         retext = [re.sub(filter, '', t) for t in text.split() if re.sub(filter, '', t)]
-
-        return len(emoList)/len(retext);
+        if len(retext) == 0:
+            return 0
+        else:
+            return len(emoList)/len(retext);
 
 text_male = "Today on IAG we're pumped to announce that we're an ambassador for this year's GQ " \
        "Man of The Year party in Hollywood, Dec 4th! We'll be covering the event on social " \
@@ -189,8 +194,8 @@ text_fem = "SERIOUSLY, THOUGH, there's something about the sunniest of days (Err
 #print(blob.ngrams(n=2));
 #print(blob.ngrams(n=3));
 
-featureVec_m = FeatureVector(text_male)
-featureVec_f = FeatureVector(text_fem)
+#featureVec_m = FeatureVector(text_male)
+#featureVec_f = FeatureVector(text_fem)
 
 #print("Weighted average values: \n")
 #print("Prepositions: "+str(featureVec.prepositionAv()))
@@ -200,20 +205,20 @@ featureVec_f = FeatureVector(text_fem)
 #print("Articles: "+str(featureVec.articlesAv()))
 #print ("Sentiment: " +str(featureVec.sentiment()))
 
-print("Male F-measure: " + str(featureVec_m.fMeasure()))
-print("Male Emoticons: " + str(featureVec_m.emotiCount()))
-print("Male Prepositions: " + str(featureVec_m.prepositionAv()))
-print("Male Pronouns: " + str(featureVec_m.pronounsAv()))
-print("Male Articles: " + str(featureVec_m.articlesAv()))
-print("Male Hyperlinks: " + str(featureVec_m.hyperlinksAv()))
-print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
-print("Male Sentiment: " + str(featureVec_m.sentiment()))
-print("\n")
-print("Female F-measure: " + str(featureVec_f.fMeasure()))
-print("Female Emoticons: " + str(featureVec_f.emotiCount()))
-print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
-print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
-print("Female Articles: " + str(featureVec_f.articlesAv()))
-print("Female Hyperlinks: " + str(featureVec_f.hyperlinksAv()))
-print("Female Blog words: " + str(featureVec_f.blogWordsAv()))
-print("Female Sentiment: " + str(featureVec_f.sentiment()))
+#print("Male F-measure: " + str(featureVec_m.fMeasure()))
+#print("Male Emoticons: " + str(featureVec_m.emotiCount()))
+#print("Male Prepositions: " + str(featureVec_m.prepositionAv()))
+#print("Male Pronouns: " + str(featureVec_m.pronounsAv()))
+#print("Male Articles: " + str(featureVec_m.articlesAv()))
+#print("Male Hyperlinks: " + str(featureVec_m.hyperlinksAv()))
+#print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
+##print("Male Sentiment: " + str(featureVec_m.sentiment()))
+#print("\n")
+#print("Female F-measure: " + str(featureVec_f.fMeasure()))
+#print("Female Emoticons: " + str(featureVec_f.emotiCount()))
+#print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
+#print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
+#print("Female Articles: " + str(featureVec_f.articlesAv()))
+##print("Female Hyperlinks: " + str(featureVec_f.hyperlinksAv()))
+#print("Female Blog words: " + str(featureVec_f.blogWordsAv()))
+#print("Female Sentiment: " + str(featureVec_f.sentiment()))
