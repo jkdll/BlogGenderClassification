@@ -141,7 +141,7 @@ class FeatureVector:
         return round(sentiment.subjectivity,4);
 
     def fMeasure(self):
-        pos_array = TextBlob(self.text).pos_tags
+        pos_array = self.tags
 
         # get pos tag frequencies
         d = defaultdict(int)
@@ -196,8 +196,8 @@ text_fem = "SERIOUSLY, THOUGH, there's something about the sunniest of days (Err
 #print(blob.ngrams(n=2));
 #print(blob.ngrams(n=3));
 
-#featureVec_m = FeatureVector(text_male)
-#featureVec_f = FeatureVector(text_fem)
+featureVec_m = FeatureVector(text_male)
+featureVec_f = FeatureVector(text_fem)
 
 #print("Weighted average values: \n")
 #print("Prepositions: "+str(featureVec.prepositionAv()))
@@ -207,7 +207,7 @@ text_fem = "SERIOUSLY, THOUGH, there's something about the sunniest of days (Err
 #print("Articles: "+str(featureVec.articlesAv()))
 #print ("Sentiment: " +str(featureVec.sentiment()))
 
-#print("Male F-measure: " + str(featureVec_m.fMeasure()))
+print("Male F-measure: " + str(featureVec_m.fMeasure()))
 #print("Male Emoticons: " + str(featureVec_m.emotiCount()))
 #print("Male Prepositions: " + str(featureVec_m.prepositionAv()))
 #print("Male Pronouns: " + str(featureVec_m.pronounsAv()))
@@ -216,7 +216,7 @@ text_fem = "SERIOUSLY, THOUGH, there's something about the sunniest of days (Err
 #print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
 ##print("Male Sentiment: " + str(featureVec_m.sentiment()))
 #print("\n")
-#print("Female F-measure: " + str(featureVec_f.fMeasure()))
+print("Female F-measure: " + str(featureVec_f.fMeasure()))
 #print("Female Emoticons: " + str(featureVec_f.emotiCount()))
 #print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
 #print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
