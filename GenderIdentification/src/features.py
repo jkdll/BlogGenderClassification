@@ -134,14 +134,29 @@ class FeatureVector:
             d[tag] += 1
 
         # calculate F-measure
-        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH']) + 100))/100
+        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
 
         return f;
 
+    def normfMeasure(self):
+        pos_array = TextBlob(self.text).pos_tags
+
+        # get pos tag frequencies
+        d = defaultdict(int)
+        for word, tag in pos_array:
+            d[tag] += 1
+
+        # calculate F-measure
+        f = (0.5 * ((d['NN'] + d['JJ'] + d['IN'] + d['DT']) - (d['PRP'] + d['VB'] + d['RB'] + d['UH'])))
+        
+        if len(self.listOfWords) == 0:
+            return 0
+        measure = f/(len(self.listOfWords)/2)
+        #measure = math.pow(f/(len(listOfWords)/2), 2)
+
+        return round(measure,4);
+
     def emotiCount(self):
-        text = self.text;
-        text = (text.replace("&lt;", "<"));
-        text = (text.replace("&gt;", ">"));
 
         # detects :) :( :p :P :D :o :O :S :/ :@ :| :] :[ :} :{
         #
@@ -200,6 +215,7 @@ print("Male Blog words: " + str(featureVec_m.blogWordsAv()))
 print("Male Sentiment: " + str(featureVec_m.sentiment()))
 print("\n")
 print("Female F-measure: " + str(featureVec_f.fMeasure()))
+print("Female Normalised F-measure: " + str(featureVec_f.normfMeasure()))
 print("Female Emoticons: " + str(featureVec_f.emotiCount()))
 print("Female Prepositions: " + str(featureVec_f.prepositionAv()))
 print("Female Pronouns: " + str(featureVec_f.pronounsAv()))
