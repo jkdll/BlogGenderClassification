@@ -6,7 +6,7 @@ import codecs
 from os import path
 from features import FeatureVector
 
-blogsDir = 'C:\\Users\\Jake\\Desktop\\genID\\bloggroups\\group7';
+blogsDir = 'C:\\Users\\Jake\\Desktop\\genID\\bloggroups\\group31';
 filenames = next(os.walk(blogsDir))[2]
 
 # print filenames;
@@ -16,7 +16,7 @@ filenames = next(os.walk(blogsDir))[2]
 counter = 0
 mpa = dict.fromkeys(range(32))
 dataset = [];
-with open('C://Users//Jake//Desktop//genID//data7.csv', 'a') as csvfile:
+with open('C://Users//Jake//Desktop//genID//data31.csv', 'a') as csvfile:
         fieldnames = ['PrepositionFrequency'
                       ,'PronounFrequency'
                       ,'ArticleFrequency'
