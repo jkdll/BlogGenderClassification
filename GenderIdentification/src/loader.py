@@ -6,7 +6,7 @@ import codecs
 from os import path
 from features import FeatureVector
 
-blogsDir = 'C:\\Users\\Jake\\Desktop\\genID\\blogssmall';
+blogsDir = 'C:\\Users\\Jake\\Desktop\\genID\\bloggroups\\group7';
 filenames = next(os.walk(blogsDir))[2]
 
 # print filenames;
@@ -16,7 +16,7 @@ filenames = next(os.walk(blogsDir))[2]
 counter = 0
 mpa = dict.fromkeys(range(32))
 dataset = [];
-with open('C://Users//Jake//Desktop//genID//data.csv', 'a') as csvfile:
+with open('C://Users//Jake//Desktop//genID//data7.csv', 'a') as csvfile:
         fieldnames = ['PrepositionFrequency'
                       ,'PronounFrequency'
                       ,'ArticleFrequency'
@@ -62,17 +62,17 @@ for f in filenames:
 for d in dataset:
         with open('C://Users//Jake//Desktop//genID//data.csv', 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writerow({'PrepositionFrequency' : str(d[2])
-                             ,'PronounFrequency' : str(d[3])
-                             ,'ArticleFrequency' : str(d[4])
-                             ,'HyperlinkFrequency' : str(d[5])
-                             ,'BlogwordFrequency' : str(d[6])
-                             ,'AssentWordFrequency' : str(d[7])
-                             ,'Polarity' : str(d[8])
-                             ,'Subjectivity' : str(d[9])
-                             ,'fmeasure' : str(d[10])
-                             ,'emoticons' : str(d[11])
-                             ,'gender' : str(d[12])})
+            writer.writerow({'PrepositionFrequency' : str(d[0])
+                             ,'PronounFrequency' : str(d[1])
+                             ,'ArticleFrequency' : str(d[2])
+                             ,'HyperlinkFrequency' : str(d[3])
+                             ,'BlogwordFrequency' : str(d[4])
+                             ,'AssentWordFrequency' : str(d[5])
+                             ,'Polarity' : str(d[6])
+                             ,'Subjectivity' : str(d[7])
+                             ,'fmeasure' : str(d[8])
+                             ,'emoticons' : str(d[9])
+                             ,'gender' : str(d[10])})
         
 print("Read: " + str(counter) + " Files and " + str(postcount) + " Posts");
 # var = raw_input("Waiting...");
