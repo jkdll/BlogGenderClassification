@@ -117,7 +117,7 @@ print ('---------------------------')
 
 # Get Classifier
 # nb_class = kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
-nb_class = kfoldCrossValidation(dataSet,int(10),'Max Entropy')
+nb_class = kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
 
 # Save Classifier
 f = open('C:\\Users\\Jake\\Desktop\\genID\\genID.pickle', 'wb')
