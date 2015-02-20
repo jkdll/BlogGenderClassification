@@ -44,7 +44,6 @@ sds = loadCsv(dataDir)
 # Remove Headers, and shuffle data set.
 headers = sds[0]
 sds.pop(0)
-print(sds[0])
 random.shuffle(sds)
     
 # The List used for the Data Set
@@ -80,7 +79,7 @@ print('Training Length: ' + str(len(trainingSet)))
 
 print ('---------------------------')
 
-# kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
+kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
 # classifier = nltk.NaiveBayesClassifier.train(trainingSet)
 # classifier = nltk.svm.train(trainingSet)
 # print(nltk.classify.accuracy(classifier, validationSet))
