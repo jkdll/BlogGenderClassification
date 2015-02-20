@@ -109,17 +109,17 @@ else:
         ## print(nltk.classify.accuracy(classifier, validationSet))
         ##########################################################################
         
-        # However, We shall Work with Cross Validation By Default
+    # However, We shall Work with Cross Validation By Default
         
-        # Print Data Set Length
-        print('Data Set Length: ' + str(len(dataSet)))
-        print ('---------------------------')
+    # Print Data Set Length
+    print('Data Set Length: ' + str(len(dataSet)))
+    print ('---------------------------')
 
-        # Get Classifier
-        # nb_class = kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
-        nb_class = kfoldCrossValidation(dataSet,int(sys.argv[3]),sys.argv[2])
+    # Get Classifier
+    # nb_class = kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
+    nb_class = kfoldCrossValidation(dataSet,int(sys.argv[3]),sys.argv[2])
 
-        # Save Classifier
-        f = open( str(sys.argv[4]) + '\genID.pickle', 'wb')
-        pickle.dump(nb_class, f)
-        f.close()
+    # Save Classifier
+    f = open( str(sys.argv[4]) + '\genID.pickle', 'wb')
+    pickle.dump(nb_class, f)
+    f.close()
