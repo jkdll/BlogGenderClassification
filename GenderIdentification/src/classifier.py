@@ -13,15 +13,10 @@ def loadCsv(filename):
 
 # Function for K-fold Validation
 def kfoldCrossValidation(docs,k,classifierType):
-    random.shuffle(docs) # Shuffle the instances
-    print('>> Starting ' + str(k) + '-fold Validation for ' + classifierType);
-    kLimit = int(round(len(docs)/k,0))
-    # print('K Limit: ' + str(kLimit))
-    accuracy = 0;
-    for i in range(0,int(k)):
-        lowerBound = i*kLimit
-        upperBound = ((i+1)*kLimit)
-        # print('Bounds : ' + str(lowerBound) + ',' + str(upperBound))
+    if(classifierType == 'Max Entropy'):
+        kLimit = int(round(len(docs)/10,0))
+        lowerBound = 0
+        upperBound = kLimit
         tSet = []
         vSet = []
         for j in range(0,int(len(docs))):
@@ -29,20 +24,37 @@ def kfoldCrossValidation(docs,k,classifierType):
                 tSet.append(docs[j])
             else:
                 vSet.append(docs[j])
-        # print('>> Training Set Size: ' + str(len(tSet)))
-        # print('>> Validation Set Size: ' + str(len(vSet)))
-        if(classifierType == 'Max Entropy'):
-            classifier = nltk.MaxentClassifier.train(tSet)
-            tempAccuracy = nltk.classify.accuracy(classifier, vSet)
-        else: 
+        classifierToSave = nltk.MaxentClassifier.train(tSet)
+    else:
+        random.shuffle(docs) # Shuffle the instances
+        print('>> Starting ' + str(k) + '-fold Validation for ' + classifierType);
+        kLimit = int(round(len(docs)/k,0))
+        maxAccuracy = 0
+        # print('K Limit: ' + str(kLimit))
+        accuracy = 0;
+        for i in range(0,int(k)):
+            lowerBound = i*kLimit
+            upperBound = ((i+1)*kLimit)
+            # print('Bounds : ' + str(lowerBound) + ',' + str(upperBound))
+            tSet = []
+            vSet = []
+            for j in range(0,int(len(docs))):
+                if( j < lowerBound or j >= upperBound):
+                    tSet.append(docs[j])
+                else:
+                    vSet.append(docs[j])
+            # print('>> Training Set Size: ' + str(len(tSet)))
+            # print('>> Validation Set Size: ' + str(len(vSet)))
             classifier = nltk.NaiveBayesClassifier.train(tSet)
             tempAccuracy = nltk.classify.accuracy(classifier, vSet)
-        print ('>> Fold ' + str(i) + ' -> Training Set Size: ' + str(len(tSet)) + ', Validation Set Size: ' + str(len(vSet)) 
-               + ' Accuracy: ' + str(tempAccuracy))
-        accuracy = accuracy + tempAccuracy
-    accuracy = accuracy/k
-    print('>> Total Accuracy: ' + str(accuracy))
-    return classifier
+            print ('>> Fold ' + str(i) + ' -> Training Set Size: ' + str(len(tSet)) + ', Validation Set Size: ' + str(len(vSet)) 
+                   + ' Accuracy: ' + str(tempAccuracy))
+            if(tempAccuracy >= maxAccuracy):
+                classifierToSave = classifier
+            accuracy = accuracy + tempAccuracy
+        accuracy = accuracy/k
+        print('>> Total Accuracy: ' + str(accuracy))
+    return classifierToSave
 
 
 # Get Total Number of Arguments
