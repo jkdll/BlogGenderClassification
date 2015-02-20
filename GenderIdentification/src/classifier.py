@@ -2,6 +2,8 @@ import csv
 import pprint
 import random
 import nltk
+import sys
+import pickle
 
 # Function to Open the CSV
 def loadCsv(filename):
@@ -10,7 +12,6 @@ def loadCsv(filename):
     return sds
 
 # Function for K-fold Validation
-# 
 def kfoldCrossValidation(docs,k,classifierType):
     random.shuffle(docs) # Shuffle the instances
     print('>> Starting ' + str(k) + '-fold Validation for ' + classifierType);
@@ -30,13 +31,30 @@ def kfoldCrossValidation(docs,k,classifierType):
                 vSet.append(docs[j])
         # print('>> Training Set Size: ' + str(len(tSet)))
         # print('>> Validation Set Size: ' + str(len(vSet)))
-        classifier = nltk.NaiveBayesClassifier.train(tSet)
-        tempAccuracy = nltk.classify.accuracy(classifier, validationSet)
+        if(classifierType == 'Max Entropy'):
+            classifier = nltk.MaxentClassifier.train(tSet)
+            tempAccuracy = nltk.classify.accuracy(classifier, vSet)
+        else: 
+            classifier = nltk.NaiveBayesClassifier.train(tSet)
+            tempAccuracy = nltk.classify.accuracy(classifier, vSet)
         print ('>> Fold ' + str(i) + ' -> Training Set Size: ' + str(len(tSet)) + ', Validation Set Size: ' + str(len(vSet)) 
                + ' Accuracy: ' + str(tempAccuracy))
         accuracy = accuracy + tempAccuracy
     accuracy = accuracy/k
     print('>> Total Accuracy: ' + str(accuracy))
+    return classifier
+
+
+# Get Total Number of Arguments
+total_arguments = len(sys.argv)
+
+# Get the Argument List
+input_arguments = str(sys.argv)
+
+#if(total_arguments <= 3):
+#    raise Exception("Error Less than Two Arguments; Usage: 'python classifier.py '<Data Directory>' '<O'")
+#else:
+#    input_arguments = str(sys.argv)
     
 dataDir = 'C:\\Users\\Jake\\Desktop\\genID\\biggerdata.csv'
 sds = loadCsv(dataDir)
@@ -49,7 +67,7 @@ random.shuffle(sds)
 # The List used for the Data Set
 dataSet = []
 
-# Convert to Proper Classes
+# Convert Data to Proper Classes
 for d in sds:
     featureIQ = {}
     featureIQ[headers[0]] = float(d[0])
@@ -64,24 +82,32 @@ for d in sds:
     featureIQ[headers[9]] = float(d[9])
     dataSet.append([featureIQ,str(d[10])])
 
-# Calculate Split Ratio and Split Limits (TODO: Amend for Cross-Validation)
-limit = int(round(len(dataSet)/10,0))
+###########################################################################
+# For Manual Splitting: Split into Training Set and Validation Set
+# Calculate Split Ratio and Split Limits 
+## limit = int(round(len(dataSet)/10,0))
+## validationSet = dataSet[0:limit]
+## trainingSet = dataSet[limit:len(dataSet)]
+# To Print:
+## print('Validation Length: ' + str(len(validationSet)))
+## print('Training Length: ' + str(len(trainingSet)))
+# To Classify:
+## classifier = nltk.NaiveBayesClassifier.train(trainingSet)
+## classifier = nltk.svm.train(trainingSet)
+## print(nltk.classify.accuracy(classifier, validationSet))
+##########################################################################
 
-# Split into Training Set and Validation Set (TODO: Amend for Cross-Validation)
-validationSet = dataSet[0:limit]
-trainingSet = dataSet[limit:len(dataSet)]
+# However, We shall Work with Cross Validation By Default
 
-# Example for Cross Validation ... validationSet = dataSet[i*limit:(i+1)*limit]
-
+# Print Data Set Length
 print('Data Set Length: ' + str(len(dataSet)))
-print('Validation Length: ' + str(len(validationSet)))
-print('Training Length: ' + str(len(trainingSet)))
-
 print ('---------------------------')
 
-kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
-# classifier = nltk.NaiveBayesClassifier.train(trainingSet)
-# classifier = nltk.svm.train(trainingSet)
-# print(nltk.classify.accuracy(classifier, validationSet))
+# Get Classifier
+# nb_class = kfoldCrossValidation(dataSet,int(10),'Naive Bayes')
+nb_class = kfoldCrossValidation(dataSet,int(10),'Max Entropy')
 
-    
+# Save Classifier
+f = open('C:\\Users\\Jake\\Desktop\\genID\\genID.pickle', 'wb')
+pickle.dump(nb_class, f)
+f.close()
